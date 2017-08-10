@@ -1,5 +1,4 @@
-﻿using System;
-using NExpect.Demo.Animals;
+﻿using NExpect.Demo.Animals;
 using NExpect.Demo.Animals.Implementations;
 
 namespace NExpect.Demo

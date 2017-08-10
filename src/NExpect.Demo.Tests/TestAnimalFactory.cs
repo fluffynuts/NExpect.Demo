@@ -1,6 +1,9 @@
 ﻿using NExpect.Demo.Animals;
 using NExpect.Demo.Animals.Implementations;
+using NExpect.Interfaces;
+using NExpect.MatcherLogic;
 using NUnit.Framework;
+using System.Linq;
 using static NExpect.Expectations;
 
 namespace NExpect.Demo.Tests
@@ -20,16 +23,31 @@ namespace NExpect.Demo.Tests
             var result = sut.CreateFlamingo();
 
             // Assert
-            Expect(result).Not.To.Be.Null();
-            Expect(result as Flamingo).Not.To.Be.Null();
-            Expect(result.Legs).To.Equal(2);
-            Expect(result.Colors).To.Contain.Exactly(1).Equal.To(Colors.Pink);
+            Expect(result).To.Be.A.Flamingo();
         }
 
-
-        protected static IAnimalFactory Create()
+        private static IAnimalFactory Create()
         {
             return new AnimalFactory();
+        }
+    }
+
+    public static class MatcherExtensions
+    {
+        public static void Flamingo<T>(this IA<T> an)
+        {
+            an.AddMatcher(item =>
+            {
+                var asFlamingo = item as Flamingo;
+                var passed = asFlamingo != null &&
+                             asFlamingo.Legs == 2 &&
+                             asFlamingo.Colors.Contains(Colors.Pink);
+                var not = passed ? "" : "not ";
+                return new MatcherResult(
+                    passed,
+                    $"Expected {item} {not}to be a flamingo"
+                );
+            });
         }
     }
 }
