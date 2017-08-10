@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NExpect.Demo.Tests
 {
     [TestFixture]
-    public class TestAnimalFactory
+    public class TestAnimalFactory : AssertionHelper
     {
         [TestFixture]
         public class YerTestsAreOlde
@@ -29,6 +29,27 @@ namespace NExpect.Demo.Tests
             }
         }
 
+        public class UsingAssertThatIsBetterThanYeOldeMethods
+        {
+            [Test]
+            public void CreateFlamingo_ShouldReturnAFlamingo()
+            {
+                // Arrange
+                var sut = Create();
+
+                // Pre-Assert
+
+                // Act
+                var result = sut.CreateFlamingo();
+
+                // Assert
+                Assert.That(result, Is.Not.Null);
+                Assert.That(result, Is.InstanceOf<Flamingo>());
+                Assert.That(result.Legs, Is.EqualTo(2));
+                Assert.That(result.Colors, Does.Contain(Colors.Pink));
+            }
+        }
+
         [Test]
         public void CreateFlamingo_ShouldReturnAFlamingo()
         {
@@ -41,10 +62,10 @@ namespace NExpect.Demo.Tests
             var result = sut.CreateFlamingo();
 
             // Assert
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.InstanceOf<Flamingo>());
-            Assert.That(result.Legs, Is.EqualTo(2));
-            Assert.That(result.Colors, Does.Contain(Colors.Pink));
+            Expect(result, Is.Not.Null);
+            Expect(result, Is.InstanceOf<Flamingo>());
+            Expect(result.Legs, Is.EqualTo(2));
+            Expect(result.Colors, Does.Contain(Colors.Pink));
         }
 
         protected static IAnimalFactory Create()
