@@ -6,7 +6,7 @@ using static NUnit.StaticExpect.Expectations;
 namespace NExpect.Demo.Tests
 {
     [TestFixture]
-    public class TestAnimalFactory
+    public class TestAnimalFactory_TestingEvolution
     {
         [TestFixture]
         public class YerTestsAreOlde
