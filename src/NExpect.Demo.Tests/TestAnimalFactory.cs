@@ -1,11 +1,12 @@
 ﻿using NExpect.Demo.Animals;
 using NExpect.Demo.Animals.Implementations;
 using NUnit.Framework;
+using static NUnit.StaticExpect.Expectations;
 
 namespace NExpect.Demo.Tests
 {
     [TestFixture]
-    public class TestAnimalFactory : AssertionHelper
+    public class TestAnimalFactory
     {
         [TestFixture]
         public class YerTestsAreOlde
@@ -29,6 +30,7 @@ namespace NExpect.Demo.Tests
             }
         }
 
+        [TestFixture]
         public class UsingAssertThatIsBetterThanYeOldeMethods
         {
             [Test]
@@ -47,6 +49,28 @@ namespace NExpect.Demo.Tests
                 Assert.That(result, Is.InstanceOf<Flamingo>());
                 Assert.That(result.Legs, Is.EqualTo(2));
                 Assert.That(result.Colors, Does.Contain(Colors.Pink));
+            }
+        }
+
+        [TestFixture]
+        public class AssertionHelperIsDeadAndForcingInheritenceForTestFixturesSucksAnyway : AssertionHelper
+        {
+            [Test]
+            public void CreateFlamingo_ShouldReturnAFlamingo()
+            {
+                // Arrange
+                var sut = Create();
+
+                // Pre-Assert
+
+                // Act
+                var result = sut.CreateFlamingo();
+
+                // Assert
+                Expect(result, Is.Not.Null);
+                Expect(result, Is.InstanceOf<Flamingo>());
+                Expect(result.Legs, Is.EqualTo(2));
+                Expect(result.Colors, Does.Contain(Colors.Pink));
             }
         }
 
