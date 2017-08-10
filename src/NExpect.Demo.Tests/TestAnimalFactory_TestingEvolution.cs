@@ -74,22 +74,31 @@ namespace NExpect.Demo.Tests
             }
         }
 
-        [Test]
-        public void CreateFlamingo_ShouldReturnAFlamingo()
+        [TestFixture]
+        public class UsingNunitStaticExpect
         {
-            // Arrange
-            var sut = Create();
+            [Test]
+            public void CreateFlamingo_ShouldReturnAFlamingo()
+            {
+                // Arrange
+                var sut = Create();
 
-            // Pre-Assert
+                // Pre-Assert
 
-            // Act
-            var result = sut.CreateFlamingo();
+                // Act
+                var result = sut.CreateFlamingo();
 
-            // Assert
-            Expect(result, Is.Not.Null);
-            Expect(result, Is.InstanceOf<Flamingo>());
-            Expect(result.Legs, Is.EqualTo(2));
-            Expect(result.Colors, Does.Contain(Colors.Pink));
+                // Assert
+                Expect(result, Is.Not.Null);
+                Expect(result, Is.InstanceOf<Flamingo>());
+                Expect(result.Legs, Is.EqualTo(2));
+                Expect(result.Colors, Does.Contain(Colors.Pink));
+            }
+
+            protected static IAnimalFactory Create()
+            {
+                return new AnimalFactory();
+            }
         }
 
         protected static IAnimalFactory Create()
