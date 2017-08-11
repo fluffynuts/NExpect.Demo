@@ -1,5 +1,7 @@
-﻿using NExpect.Demo.Animals;
+﻿using System.Linq;
+using NExpect.Demo.Animals;
 using NExpect.Demo.Animals.Implementations;
+using PeanutButter.RandomGenerators;
 
 namespace NExpect.Demo
 {
@@ -7,6 +9,7 @@ namespace NExpect.Demo
     {
         Animal CreateFlamingo();
         Animal[] CreateBirds();
+        Animal[] CreateBears();
     }
 
     public class AnimalFactory : IAnimalFactory
@@ -24,6 +27,15 @@ namespace NExpect.Demo
                 new Ostrich(),
                 new Penguin()
             };
+        }
+
+        public Animal[] CreateBears()
+        {
+            return new Animal[]
+            {
+                new BrownBear(),
+                new PolarBear()
+            }.Randomize().ToArray();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using NExpect.Demo.Animals;
+﻿using System;
+using System.Collections.Generic;
+using NExpect.Demo.Animals;
 using NExpect.Demo.Animals.Implementations;
 using NExpect.Interfaces;
 using NExpect.MatcherLogic;
@@ -45,6 +47,19 @@ namespace NExpect.Demo.Tests
             Expect(result[2]).To.Be.A.Penguin();
         }
 
+        [Test]
+        public void CreateBears_ShouldReturnBearsInAnyOrder()
+        {
+            // Arrange
+            var sut = Create();
+            // Pre-Assert
+            // Act
+            var result = sut.CreateBears();
+            // Assert
+            Expect(result).To.Contain.Exactly(1).BrownBears();
+            Expect(result).Not.To.Contain.Any().Birds();
+        }
+
         private static IAnimalFactory Create()
         {
             return new AnimalFactory();
@@ -53,6 +68,60 @@ namespace NExpect.Demo.Tests
 
     public static class MatcherExtensions
     {
+        public static void BrownBears<T>(this ICountMatchContinuation<IEnumerable<T>> continuation)
+        {
+            continuation.AddMatcher(collection =>
+            {
+                var expectedCount = continuation.GetExpectedCount();
+                var matchMethod = continuation.GetCountMatchMethod();
+                var total = collection.Count();
+                var count = collection.Count(o => o is BrownBear);
+                var passed = _strategies[matchMethod](total, count, expectedCount);
+                var not = passed ? "not " : "";
+                return new MatcherResult(
+                    passed,
+                    $"Expected {not}to match {_messages[matchMethod](expectedCount)} Brown Bears"
+                );
+            });
+        }
+
+        public static void Birds<T>(this ICountMatchContinuation<IEnumerable<T>> continuation)
+        {
+            continuation.AddMatcher(collection =>
+            {
+                var expectedCount = continuation.GetExpectedCount();
+                var matchMethod = continuation.GetCountMatchMethod();
+                var total = collection.Count();
+                var count = collection.Count(o => o is Flamingo || o is Penguin);
+                var passed = _strategies[matchMethod](total, count, expectedCount);
+                var not = passed ? "" : "not ";
+                return new MatcherResult(
+                    passed,
+                    $"Expected {not}to match {_messages[matchMethod](expectedCount)} Birds"
+                );
+            });
+        }
+
+        private static Dictionary<CountMatchMethods, Func<int, int, int, bool>> _strategies = 
+            new Dictionary<CountMatchMethods, Func<int, int, int, bool>>
+            {
+                [CountMatchMethods.Any] = (total, count, expected) => count > 0,
+                [CountMatchMethods.All] = (total, count, expected) => count == total,
+                [CountMatchMethods.Exactly] = (total, count, expected) => count == expected,
+                [CountMatchMethods.Maximum] = (total, count, expected) => count <= expected,
+                [CountMatchMethods.Minimum] = (total, count, expected) => count >= expected
+            };
+
+        private static Dictionary<CountMatchMethods, Func<int, string>> _messages = 
+            new Dictionary<CountMatchMethods, Func<int, string>>
+            {
+                [CountMatchMethods.Any] = (expected) => "any",
+                [CountMatchMethods.All] = (expected) => "all",
+                [CountMatchMethods.Exactly] = expected => $"exactly {expected}",
+                [CountMatchMethods.Maximum] = expected => $"at most {expected}",
+                [CountMatchMethods.Minimum] = expected => $"at least {expected}"
+            };
+
         public static void Flamingo<T>(this IA<T> a)
         {
             a.AddMatcher(item =>
