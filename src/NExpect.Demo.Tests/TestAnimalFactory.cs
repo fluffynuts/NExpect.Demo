@@ -60,6 +60,23 @@ namespace NExpect.Demo.Tests
             Expect(result).Not.To.Contain.Any().Birds();
         }
 
+        [Test]
+        public void CreateBirds_ShouldReturnFlamingoWithCorrectColors()
+        {
+            // Arrange
+            var sut = Create();
+
+            // Pre-Assert
+
+            // Act
+            var result = sut.CreateFlamingo();
+
+            // Assert
+            Expect(result.Colors).To.Contain.Exactly(1).Equal.To(Colors.Pink);
+            Expect(result.Colors).To.Contain.Exactly(1).Equal.To(Colors.White);
+            Expect(result.Colors).To.Contain.Exactly(1).Equal.To(Colors.Black);
+        }
+
         private static IAnimalFactory Create()
         {
             return new AnimalFactory();
@@ -72,7 +89,7 @@ namespace NExpect.Demo.Tests
         {
             continuation.AddMatcher(collection =>
             {
-                var expectedCount = continuation.GetExpectedCount();
+                var expectedCount = continuation.GetExpectedCount<T>();
                 var matchMethod = continuation.GetCountMatchMethod();
                 var total = collection.Count();
                 var count = collection.Count(o => o is BrownBear);
@@ -89,7 +106,7 @@ namespace NExpect.Demo.Tests
         {
             continuation.AddMatcher(collection =>
             {
-                var expectedCount = continuation.GetExpectedCount();
+                var expectedCount = continuation.GetExpectedCount<T>();
                 var matchMethod = continuation.GetCountMatchMethod();
                 var total = collection.Count();
                 var count = collection.Count(o => o is Flamingo || o is Penguin);
@@ -102,7 +119,7 @@ namespace NExpect.Demo.Tests
             });
         }
 
-        private static Dictionary<CountMatchMethods, Func<int, int, int, bool>> _strategies = 
+        private static readonly Dictionary<CountMatchMethods, Func<int, int, int, bool>> _strategies = 
             new Dictionary<CountMatchMethods, Func<int, int, int, bool>>
             {
                 [CountMatchMethods.Any] = (total, count, expected) => count > 0,
