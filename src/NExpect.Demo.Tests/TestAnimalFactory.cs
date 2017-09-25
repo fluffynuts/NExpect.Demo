@@ -72,10 +72,11 @@ namespace NExpect.Demo.Tests
             var result = sut.CreateFlamingo();
 
             // Assert
-            Expect(result).To.Have.Color(Colors.Pink);
-            Expect(result).To.Have.Color(Colors.White);
-            Expect(result).To.Have.Color(Colors.Black);
-            Expect(result).Not.To.Have.Color(Colors.Brown);
+            Expect(result)
+                .To.Have.Color(Colors.Pink)
+                .And.To.Have.Color(Colors.White)
+                .And.To.Have.Color(Colors.Black)
+                .And.Not.To.Have.Color(Colors.Brown);
         }
 
         private static IAnimalFactory Create()
@@ -86,15 +87,16 @@ namespace NExpect.Demo.Tests
 
     public static class MatcherExtensions
     {
-        public static void Color<T>(
+        public static IMore<T> Color<T>(
             this IHave<T> have,
             Colors color
-        ) where T: Animal
+        ) where T : Animal
         {
             have.Compose(animal =>
             {
                 Expect(animal.Colors).To.Contain.Exactly(1).Equal.To(color);
             });
+            return have.More();
         }
 
         public static void BrownBears<T>(this ICountMatchContinuation<IEnumerable<T>> continuation)
@@ -106,7 +108,9 @@ namespace NExpect.Demo.Tests
                 var total = collection.Count();
                 var count = collection.Count(o => o is BrownBear);
                 var passed = _strategies[matchMethod](total, count, expectedCount);
-                var not = passed ? "not " : "";
+                var not = passed
+                    ? "not "
+                    : "";
                 return new MatcherResult(
                     passed,
                     $"Expected {not}to match {_messages[matchMethod](expectedCount)} Brown Bears"
@@ -123,7 +127,9 @@ namespace NExpect.Demo.Tests
                 var total = collection.Count();
                 var count = collection.Count(o => o is Flamingo || o is Penguin);
                 var passed = _strategies[matchMethod](total, count, expectedCount);
-                var not = passed ? "" : "not ";
+                var not = passed
+                    ? ""
+                    : "not ";
                 return new MatcherResult(
                     passed,
                     $"Expected {not}to match {_messages[matchMethod](expectedCount)} Birds"
@@ -131,7 +137,7 @@ namespace NExpect.Demo.Tests
             });
         }
 
-        private static readonly Dictionary<CountMatchMethods, Func<int, int, int, bool>> _strategies = 
+        private static readonly Dictionary<CountMatchMethods, Func<int, int, int, bool>> _strategies =
             new Dictionary<CountMatchMethods, Func<int, int, int, bool>>
             {
                 [CountMatchMethods.Any] = (total, count, expected) => count > 0,
@@ -141,7 +147,7 @@ namespace NExpect.Demo.Tests
                 [CountMatchMethods.Minimum] = (total, count, expected) => count >= expected
             };
 
-        private static Dictionary<CountMatchMethods, Func<int, string>> _messages = 
+        private static Dictionary<CountMatchMethods, Func<int, string>> _messages =
             new Dictionary<CountMatchMethods, Func<int, string>>
             {
                 [CountMatchMethods.Any] = (expected) => "any",
