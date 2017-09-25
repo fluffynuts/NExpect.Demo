@@ -72,9 +72,10 @@ namespace NExpect.Demo.Tests
             var result = sut.CreateFlamingo();
 
             // Assert
-            Expect(result.Colors).To.Contain.Exactly(1).Equal.To(Colors.Pink);
-            Expect(result.Colors).To.Contain.Exactly(1).Equal.To(Colors.White);
-            Expect(result.Colors).To.Contain.Exactly(1).Equal.To(Colors.Black);
+            Expect(result).To.Have.Color(Colors.Pink);
+            Expect(result).To.Have.Color(Colors.White);
+            Expect(result).To.Have.Color(Colors.Black);
+            Expect(result).Not.To.Have.Color(Colors.Brown);
         }
 
         private static IAnimalFactory Create()
@@ -85,6 +86,17 @@ namespace NExpect.Demo.Tests
 
     public static class MatcherExtensions
     {
+        public static void Color<T>(
+            this IHave<T> have,
+            Colors color
+        ) where T: Animal
+        {
+            have.Compose(animal =>
+            {
+                Expect(animal.Colors).To.Contain.Exactly(1).Equal.To(color);
+            });
+        }
+
         public static void BrownBears<T>(this ICountMatchContinuation<IEnumerable<T>> continuation)
         {
             continuation.AddMatcher(collection =>
