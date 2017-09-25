@@ -73,10 +73,10 @@ namespace NExpect.Demo.Tests
 
             // Assert
             Expect(result)
-                .To.Have.Color(Colors.Pink)
-                .And.To.Have.Color(Colors.White)
-                .And.To.Have.Color(Colors.Black)
-                .And.Not.To.Have.Color(Colors.Brown);
+                .To.Be.Bipedal()
+                .And.To.Have.Color(Colors.Pink)
+                .And.Color(Colors.White)
+                .And.Color(Colors.Black);
         }
 
         private static IAnimalFactory Create()
@@ -97,6 +97,29 @@ namespace NExpect.Demo.Tests
                 Expect(animal.Colors).To.Contain.Exactly(1).Equal.To(color);
             });
             return have.More();
+        }
+
+        public static IMore<T> Color<T>(
+            this IAnd<T> have,
+            Colors color
+        ) where T : Animal
+        {
+            have.Compose(animal =>
+            {
+                Expect(animal.Colors).To.Contain.Exactly(1).Equal.To(color);
+            });
+            return have.More();
+        }
+
+        public static IMore<T> Bipedal<T>(
+            this IBe<T> be
+        ) where T: Animal
+        {
+            be.Compose(actual =>
+            {
+                Expect(actual.Legs).To.Equal(2);
+            });
+            return be.More();
         }
 
         public static void BrownBears<T>(this ICountMatchContinuation<IEnumerable<T>> continuation)
